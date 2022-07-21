@@ -6,6 +6,12 @@ import (
 	"github.com/badkaktus/gorocket"
 )
 
+type Client interface {
+	Login(login string, password string) error
+	CreateMessage(login string, text string) gorocket.Message
+	SendMessage(msg gorocket.Message) error
+}
+
 type client struct {
 	client *gorocket.Client
 }

@@ -3,11 +3,15 @@ package endpoints
 import (
 	"encoding/json"
 	"net/http"
-	"service-desk-bots/internal/domain"
+	"service-desk-senders/internal/domain"
 )
 
 type ServiceDeskEvent struct {
 	root domain.Sender
+}
+
+func NewServiceDeskEvent(root domain.Sender) *ServiceDeskEvent {
+	return &ServiceDeskEvent{root: root}
 }
 
 func (e ServiceDeskEvent) ReceiveEvent(w http.ResponseWriter, r *http.Request) {
@@ -19,8 +23,8 @@ func (e ServiceDeskEvent) ReceiveEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	err = e.root.Send(msg)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var node = e.root
+	for node != nil {
+		node = node.Send(msg)
 	}
 }
